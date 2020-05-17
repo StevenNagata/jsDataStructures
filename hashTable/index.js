@@ -1,0 +1,79 @@
+class HashTable {
+  constructor(size) {
+    this.buckets = Array(size);
+    this.numBuckets = this.buckets.length;
+  }
+  hash(key) {
+    let total = 0;
+    for (let i = 0; i < key.length; i++) {
+      total += key.charCodeAt(i);
+    }
+    var bucket = total % this.buckets.length;
+    return bucket;
+  }
+  insert(key, value) {
+    let keyIndex = this.hash(key);
+    if (!this.buckets[keyIndex]) {
+      this.buckets[keyIndex] = new HashNode(key, value);
+    } else if (this.buckets[keyIndex].key === key) {
+      this.buckets[keyIndex].value = value;
+      return { key, value };
+    } else {
+      let currentNode = this.buckets[keyIndex];
+      while (currentNode.next !== null) {
+        if (currentNode.next.key === key) {
+          currentNode.next.value = value;
+          return { key, value };
+        }
+        currentNode = currentNode.next;
+      }
+      currentNode.next = new HashNode(key, value);
+    }
+    return keyIndex;
+  }
+  get(key) {
+    let keyIndex = this.hash(key);
+    let currentNode = this.buckets[keyIndex];
+    if (!currentNode) {
+      return null;
+    } else {
+      while (currentNode.key !== key) {
+        if (currentNode.next) {
+          currentNode = currentNode.next;
+        } else {
+          return null;
+        }
+      }
+      return currentNode.value;
+    }
+  }
+  retreiveAll() {
+    let results = [];
+    this.buckets.forEach(bucket => {
+      if (!bucket) return;
+      let currentNode = bucket;
+      while (currentNode !== null) {
+        results.push(currentNode.value);
+        currentNode = currentNode.next;
+      }
+    });
+    return results;
+  }
+}
+
+class HashNode {
+  constructor(key, value, next) {
+    this.key = key;
+    this.value = value;
+    this.next = next || null;
+  }
+}
+
+var HT = new HashTable(30);
+HT.insert("Steven", "hello");
+HT.insert("Tseven", "LA fitness");
+HT.insert("nevets", "Taco")
+HT.insert("Tiff", "Biff")
+console.log(HT.retreiveAll())
+//HT.get("Tseven")
+console.log(JSON.stringify(HT, null, "  "));
